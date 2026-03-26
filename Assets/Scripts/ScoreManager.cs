@@ -1,30 +1,39 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
-    public int score = 0;
-    private bool isRunning = true;
+    public static ScoreManager Instance;
+
+    public int CurrentScore { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void ResetRunScore()
+    {
+        CurrentScore = 0;
+    }
 
     public void AddScore(int amount)
     {
-        if (!isRunning) return;
-
-        score += amount;
-        Debug.Log("Score: " + score);
+        CurrentScore += amount;
+        Debug.Log("Score: " + CurrentScore);
     }
 
-    public void SetScore(int value)
+    public void SubmitCurrentScore()
     {
-        score = value;
-    }
-
-    public int GetScore()
-    {
-        return score;
-    }
-
-    public void StopScore()
-    {
-        isRunning = false;
+        if (ScoreAPI.Instance != null)
+        {
+            ScoreAPI.Instance.SendScore(CurrentScore);
+        }
     }
 }

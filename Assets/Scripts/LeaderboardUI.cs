@@ -1,13 +1,32 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
+public class Usuario
+{
+    public string username;
+    public Data data;
+}
+
+[System.Serializable]
+public class Data
+{
+    public int score;
+}
+
+[System.Serializable]
+public class UsuariosResponse
+{
+    public List<Usuario> usuarios;
+}
+
 public class LeaderboardUI : MonoBehaviour
 {
-    public Transform content;
     public GameObject scoreItemPrefab;
-   
+    public Transform content;
+
     void Start()
     {
         StartCoroutine(GetScores());
@@ -22,26 +41,26 @@ public class LeaderboardUI : MonoBehaviour
 
         yield return req.SendWebRequest();
 
-        if (req.result == UnityWebRequest.Result.Success)
+        if (req.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log(req.downloadHandler.text);
-
-            UsersResponse res = JsonUtility.FromJson<UsersResponse>(req.downloadHandler.text);
-
-            int rank = 1;
-
-            foreach (User user in res.usuarios)
-            {
-                GameObject obj = Instantiate(scoreItemPrefab, content);
-
-                obj.GetComponent<ScoreItemUI>().Setup(rank, user.username, user.score);
-
-                rank++;
-            }
+            Debug.LogError(req.error);
+            yield break;
         }
-        else
+
+        UsuariosResponse response = JsonUtility.FromJson<UsuariosResponse>(req.downloadHandler.text);
+
+        foreach (Usuario user in response.usuarios)
         {
-            Debug.Log("Error: " + req.error);
+            GameObject item = Instantiate(scoreItemPrefab, content);
+
+            ScoreItemUI ui = item.GetComponent<ScoreItemUI>();
+
+            int score = 0;
+
+            if (user.data != null)
+                score = user.data.score;
+
+            ui.SetData(user.username, score);
         }
     }
 }

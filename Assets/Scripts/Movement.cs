@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -21,16 +20,24 @@ public class Movement : MonoBehaviour
     public Transform Sprite;
 
     Rigidbody2D rb;
-    ScoreManager scoreManager;
+
+    bool isDead = false; // 🔥 CONTROL DE MUERTE
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        scoreManager = FindObjectOfType<ScoreManager>(); // 👈 lo guardamos una vez
+
+        // 🔥 RESETEAR SCORE AL INICIAR
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetRunScore();
+        }
     }
 
     void Update()
     {
+        if (isDead) return; // 🔥 BLOQUEA TODO AL MORIR
+
         transform.position += Vector3.right * SpeedValues[(int)CurrentSpeed] * Time.deltaTime;
 
         if (OnGround())
@@ -41,7 +48,7 @@ public class Movement : MonoBehaviour
 
             if (Keyboard.current.spaceKey.wasPressedThisFrame || Mouse.current.leftButton.wasPressedThisFrame)
             {
-                rb.linearVelocity = Vector2.zero; // 👈 cambio seguro
+                rb.linearVelocity = Vector2.zero;
                 rb.AddForce(Vector2.up * 26.6581f, ForceMode2D.Impulse);
             }
         }
@@ -82,18 +89,33 @@ public class Movement : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return; // 🔥 evita múltiples ejecuciones
+
+        isDead = true;
+
+        // 🔥 DETENER TODO INMEDIATO
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.gravityScale = 0;
+
+        StartCoroutine(DieCoroutine());
+    }
+
+    IEnumerator DieCoroutine()
+    {
         Debug.Log("Moriste");
 
-        ScoreManager sm = FindObjectOfType<ScoreManager>();
-
-        if (sm != null)
+        if (ScoreManager.Instance != null)
         {
-            ScoreAPI.Instance.SendScore(sm.GetScore());
+            int score = ScoreManager.Instance.CurrentScore;
+
+            GameManager.Instance.lastScore = score;
+            ScoreManager.Instance.SubmitCurrentScore();
         }
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
+        yield return new WaitForSeconds(0.5f); // 🔥 pequeño delay
+
+        SceneManager.LoadScene("MenuScene"); // 🔥 ir al menú
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -106,17 +128,31 @@ public class Movement : MonoBehaviour
 
     void Win()
     {
+        if (isDead) return; // reutilizamos control
+
+        isDead = true;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.gravityScale = 0;
+
+        StartCoroutine(WinCoroutine());
+    }
+
+    IEnumerator WinCoroutine()
+    {
         Debug.Log("Ganaste");
 
-        ScoreManager sm = FindObjectOfType<ScoreManager>();
-
-        if (sm != null)
+        if (ScoreManager.Instance != null)
         {
-            int finalScore = 100; // o sm.score si quieres usar el acumulado
+            int score = ScoreManager.Instance.CurrentScore;
 
-            ScoreAPI.Instance.SendScore(finalScore);
+            GameManager.Instance.lastScore = score;
+            ScoreManager.Instance.SubmitCurrentScore();
         }
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+        yield return new WaitForSeconds(0.5f);
+
+        SceneManager.LoadScene("MenuScene");
     }
 }

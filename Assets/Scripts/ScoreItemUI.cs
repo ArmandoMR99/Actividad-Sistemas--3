@@ -1,16 +1,14 @@
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 
 public class ScoreItemUI : MonoBehaviour
 {
-    public TextMeshProUGUI rankText;
     public TextMeshProUGUI usernameText;
     public TextMeshProUGUI scoreText;
 
-    public void Setup(int rank, string username, float score)
+    public void SetData(string username, int score)
     {
-        rankText.text = rank.ToString();
         usernameText.text = username;
-        scoreText.text = score.ToString("0");
+        scoreText.text = score.ToString();
     }
 }

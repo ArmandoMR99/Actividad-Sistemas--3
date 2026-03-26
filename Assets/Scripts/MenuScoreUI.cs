@@ -7,6 +7,12 @@ public class MenuScoreUI : MonoBehaviour
 
     void Start()
     {
+        if (GameManager.Instance == null)
+        {
+            scoreText.text = "Error cargando score";
+            return;
+        }
+
         float score = GameManager.Instance.lastScore;
 
         if (score > 0)

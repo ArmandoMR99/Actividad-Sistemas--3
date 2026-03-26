@@ -1153,7 +1153,6 @@ GameObject:
   - component: {fileID: 1189478647}
   - component: {fileID: 1189478646}
   - component: {fileID: 1189478645}
-  - component: {fileID: 1189478649}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1271,19 +1270,6 @@ Transform:
   - {fileID: 1865877709}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1189478649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1189478644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 458871425afc27d42a9347b8836d47ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
-  score: 0
 --- !u!1001 &1265050154
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1652,6 +1638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52309d41e4578d8449b152ee2db14831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreAPI
+  LastError: 
 --- !u!4 &1809075890
 Transform:
   m_ObjectHideFlags: 0

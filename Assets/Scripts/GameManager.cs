@@ -4,20 +4,20 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public string token;
     public string username;
-    public float lastScore;
+    public string token;
 
-    void Awake()
+    public float lastScore; // 🔥 ESTE ES EL QUE TE FALTABA
+
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 👈 CLAVE
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 }

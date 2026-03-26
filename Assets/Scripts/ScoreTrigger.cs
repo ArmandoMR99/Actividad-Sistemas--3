@@ -2,25 +2,20 @@ using UnityEngine;
 
 public class ScoreTrigger : MonoBehaviour
 {
-    private bool used = false;
+    bool activated = false;
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (used) return;
+        if (activated) return;
 
         if (collision.CompareTag("Player"))
         {
-            ScoreManager sm = collision.GetComponent<ScoreManager>();
+            activated = true;
 
-            if (sm != null)
+            if (ScoreManager.Instance != null)
             {
-                sm.AddScore(1);
-                Debug.Log("Score increased by 1!");
+                ScoreManager.Instance.AddScore(1);
             }
-
-            used = true;
         }
     }
-
-    
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -8,8 +8,32 @@ public class CameraFollow : MonoBehaviour
 
     void LateUpdate()
     {
-        Vector3 desiredPosition = new Vector3(target.position.x + offset.x, offset.y, offset.z);
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+        // 🔥 BUSCAR PLAYER SI NO EXISTE
+        if (target == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                target = player.transform;
+            }
+            else
+            {
+                return; // ⛔ no hacer nada hasta que exista
+            }
+        }
+
+        Vector3 desiredPosition = new Vector3(
+            target.position.x + offset.x,
+            offset.y,
+            offset.z
+        );
+
+        Vector3 smoothedPosition = Vector3.Lerp(
+            transform.position,
+            desiredPosition,
+            smoothSpeed * Time.deltaTime
+        );
 
         transform.position = smoothedPosition;
     }

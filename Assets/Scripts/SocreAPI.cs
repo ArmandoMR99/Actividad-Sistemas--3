@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-using System;
 
 public class ScoreAPI : MonoBehaviour
 {
@@ -17,14 +16,16 @@ public class ScoreAPI : MonoBehaviour
         StartCoroutine(SendScoreCoroutine(score));
     }
 
-    IEnumerator SendScoreCoroutine(int score)
+    private IEnumerator SendScoreCoroutine(int score)
     {
-        string url = "https://sid-restapi.onrender.com/api/scores"; // ⚠️ ajusta si tu endpoint es otro
+        string url = "https://sid-restapi.onrender.com/api/usuarios";
 
-        // JSON que vas a enviar
-        string json = "{\"score\":" + score + "}";
+        string json = "{\"username\":\"" + GameManager.Instance.username + "\",\"data\":{\"score\":" + score + "}}";
 
-        UnityWebRequest req = new UnityWebRequest(url, "POST");
+        Debug.Log("USERNAME: " + GameManager.Instance.username);
+        Debug.Log("JSON ENVIADO: " + json);
+
+        UnityWebRequest req = new UnityWebRequest(url, "PATCH");
 
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
 
@@ -40,13 +41,11 @@ public class ScoreAPI : MonoBehaviour
 
         if (req.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("ERROR AL ENVIAR SCORE: " + req.error);
+            Debug.LogError("ERROR: " + req.error);
         }
         else
         {
-            Debug.Log("SCORE ENVIADO CORRECTAMENTE");
+            Debug.Log("SCORE GUARDADO CORRECTAMENTE");
         }
     }
-
-    
 }
